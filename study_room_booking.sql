@@ -5,7 +5,7 @@
  Source Server Type    : MySQL
  Source Server Version : 50744
  Source Host           : localhost:3306
- Source Schema         : python_room
+ Source Schema         : study_room_booking
 
  Target Server Type    : MySQL
  Target Server Version : 50744
