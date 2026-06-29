@@ -80,9 +80,9 @@ WSGI_APPLICATION = 'study_room_booking.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'python_room',  # 数据库名称
+        'NAME': 'study_room_booking',  # 数据库名称
         'USER': 'root',  # MySQL用户名
-        'PASSWORD': '4643830',  # MySQL密码
+        'PASSWORD': '123456',  # MySQL密码
         'HOST': 'localhost',  # 数据库地址
         'PORT': '3306',  # 数据库端口
         'OPTIONS': {
