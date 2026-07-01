@@ -52,7 +52,7 @@
             </div>
             <div class="col-md-6 mb-3">
                 <h6><i class="bi bi-check-circle"></i> 可用座位</h6>
-                <p class="text-success"><strong>{{ room.available_seats }} 个</strong></p>
+                <p class="text-success"><strong>{{ computed_available }} 个</strong></p>
             </div>
         </div>
 
@@ -90,24 +90,30 @@
 {% if seats %}
 <div class="seat-grid">
     {% for seat in seats %}
-    <a href="{% url 'seat_detail' seat.id %}" class="seat-item {{ seat.status }}" title="{{ seat.seat_number }}">
-        <div class="seat-number">{{ seat.seat_number }}</div>
-        <div class="seat-status">
-            {% if seat.status == 'available' %}
-                可用
-            {% elif seat.status == 'occupied' %}
-                已占
-            {% else %}
-                不可用
-            {% endif %}
-        </div>
-        {% if seat.has_power %}
-        <small><i class="bi bi-plug"></i></small>
+        {% if seat.status == 'unavailable' %}
+            {% with seat_class='unavailable' seat_text='不可用' %}
+            <a href="{% url 'seat_detail' seat.id %}" class="seat-item {{ seat_class }}" title="{{ seat.seat_number }}">
+                <div class="seat-number">{{ seat.seat_number }}</div>
+                <div class="seat-status">{{ seat_text }}</div>
+                {% if seat.has_power %}<small><i class="bi bi-plug"></i></small>{% endif %}
+                {% if seat.has_lamp %}<small><i class="bi bi-lightbulb"></i></small>{% endif %}
+            </a>
+            {% endwith %}
+        {% elif seat.id in occupied_seat_ids %}
+            <a href="{% url 'seat_detail' seat.id %}" class="seat-item occupied" title="{{ seat.seat_number }} - 已预约">
+                <div class="seat-number">{{ seat.seat_number }}</div>
+                <div class="seat-status">已占</div>
+                {% if seat.has_power %}<small><i class="bi bi-plug"></i></small>{% endif %}
+                {% if seat.has_lamp %}<small><i class="bi bi-lightbulb"></i></small>{% endif %}
+            </a>
+        {% else %}
+            <a href="{% url 'seat_detail' seat.id %}" class="seat-item available" title="{{ seat.seat_number }} - 可预约">
+                <div class="seat-number">{{ seat.seat_number }}</div>
+                <div class="seat-status">可用</div>
+                {% if seat.has_power %}<small><i class="bi bi-plug"></i></small>{% endif %}
+                {% if seat.has_lamp %}<small><i class="bi bi-lightbulb"></i></small>{% endif %}
+            </a>
         {% endif %}
-        {% if seat.has_lamp %}
-        <small><i class="bi bi-lightbulb"></i></small>
-        {% endif %}
-    </a>
     {% endfor %}
 </div>
 {% else %}

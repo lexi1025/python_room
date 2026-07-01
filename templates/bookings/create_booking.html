@@ -29,9 +29,56 @@
                     </ul>
                 </div>
 
+                {% if is_prefilled %}
+                <!-- 已从首页筛选带入的预约信息 -->
+                <div class="mb-4 p-3 bg-light rounded border">
+                    <h6><i class="bi bi-check-circle text-success"></i> 已选定预约信息</h6>
+                    <div class="row mt-2">
+                        <div class="col-6">
+                            <small class="text-muted">预约日期</small>
+                            <p class="fw-bold mb-0">{{ prefilled_date }}</p>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted">预约时段</small>
+                            <p class="fw-bold mb-0">
+                                {% if prefilled_time_slot == 'morning' %}上午 (08:00-12:00)
+                                {% elif prefilled_time_slot == 'afternoon' %}下午 (13:00-17:00)
+                                {% elif prefilled_time_slot == 'evening' %}晚上 (18:00-22:00)
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
                 <form method="post" novalidate>
                     {% csrf_token %}
 
+                    {% if is_prefilled %}
+                        <!-- 预填日期和时段（隐藏域，值已从首页带入） -->
+                        {{ form.booking_date }}
+                        {{ form.time_slot }}
+                    {% else %}
+                        <!-- 手动选择日期 -->
+                        <div class="mb-3">
+                            <label for="{{ form.booking_date.id_for_label }}" class="form-label">预约日期</label>
+                            {{ form.booking_date }}
+                            {% if form.booking_date.errors %}
+                                <div class="text-danger">{{ form.booking_date.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- 手动选择时段 -->
+                        <div class="mb-3">
+                            <label for="{{ form.time_slot.id_for_label }}" class="form-label">时间段</label>
+                            {{ form.time_slot }}
+                            {% if form.time_slot.errors %}
+                                <div class="text-danger">{{ form.time_slot.errors }}</div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+
+                    <!-- 选择座位 -->
                     <div class="mb-3">
                         <label for="{{ form.seat.id_for_label }}" class="form-label">选择座位</label>
                         {{ form.seat }}
@@ -41,22 +88,7 @@
                         <div class="form-text">请选择可用的座位</div>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="{{ form.booking_date.id_for_label }}" class="form-label">预约日期</label>
-                        {{ form.booking_date }}
-                        {% if form.booking_date.errors %}
-                            <div class="text-danger">{{ form.booking_date.errors }}</div>
-                        {% endif %}
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="{{ form.time_slot.id_for_label }}" class="form-label">时间段</label>
-                        {{ form.time_slot }}
-                        {% if form.time_slot.errors %}
-                            <div class="text-danger">{{ form.time_slot.errors }}</div>
-                        {% endif %}
-                    </div>
-
+                    <!-- 备注 -->
                     <div class="mb-3">
                         <label for="{{ form.note.id_for_label }}" class="form-label">备注（可选）</label>
                         {{ form.note }}

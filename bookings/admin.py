@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Booking, CheckIn
+from .models import Booking
 
 # Register your models here.
 
@@ -22,27 +22,5 @@ class BookingAdmin(admin.ModelAdmin):
         ('时间戳', {
             'fields': ('created_at', 'updated_at'),
             'classes': ('collapse',)
-        }),
-    )
-
-
-@admin.register(CheckIn)
-class CheckInAdmin(admin.ModelAdmin):
-    list_display = ['booking', 'checkin_time', 'checkout_time', 'duration']
-    list_filter = ['checkin_time', 'checkout_time']
-    search_fields = ['booking__user__username', 'booking__seat__seat_number']
-    ordering = ['-checkin_time']
-    readonly_fields = ['checkin_time']
-    date_hierarchy = 'checkin_time'
-
-    fieldsets = (
-        ('签到信息', {
-            'fields': ('booking',)
-        }),
-        ('时间信息', {
-            'fields': ('checkin_time', 'checkout_time', 'duration')
-        }),
-        ('备注', {
-            'fields': ('note',)
         }),
     )

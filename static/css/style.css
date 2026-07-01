@@ -139,6 +139,104 @@ main {
     object-fit: cover;
 }
 
+/* 首页功能卡片 */
+.feature-card {
+    transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+    border: 2px solid transparent;
+    cursor: pointer;
+}
+
+.feature-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    border-color: #007bff;
+}
+
+.feature-card a {
+    color: inherit;
+}
+
+.feature-card-active {
+    border-color: #007bff !important;
+    box-shadow: 0 0 0 3px rgba(0,123,255,0.25) !important;
+    background-color: #f0f7ff !important;
+}
+
+.feature-card-active .btn-primary {
+    background-color: #0056b3;
+    border-color: #004085;
+}
+
+/* 自习室列表展开动画 */
+#rooms-section.collapsing {
+    transition: height 0.4s ease;
+}
+
+/* 首页筛选表单 */
+.filter-form-card {
+    border: 2px solid #e9ecef;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.filter-form-card:hover {
+    border-color: #007bff;
+    box-shadow: 0 2px 12px rgba(0,123,255,0.1);
+}
+
+.filter-form-card .card-header {
+    border-bottom: none;
+}
+
+#booking-section.collapsing {
+    transition: height 0.4s ease;
+}
+
+/* 实时更新 - 紧凑座位网格 */
+.realtime-seat-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.realtime-seat {
+    width: 42px;
+    height: 42px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: bold;
+    transition: transform 0.2s;
+}
+
+.realtime-seat:hover {
+    transform: scale(1.1);
+}
+
+.realtime-seat.available {
+    background-color: #d4edda;
+    border-color: #28a745;
+    color: #155724;
+}
+
+.realtime-seat.occupied {
+    background-color: #f8d7da;
+    border-color: #dc3545;
+    color: #721c24;
+}
+
+.realtime-seat.unavailable {
+    background-color: #e2e3e5;
+    border-color: #6c757d;
+    color: #6c757d;
+}
+
+#realtime-section.collapsing {
+    transition: height 0.4s ease;
+}
+
 /* 响应式设计 */
 @media (max-width: 768px) {
     .seat-grid {

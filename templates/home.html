@@ -3,96 +3,294 @@
 {% block title %}首页 - 大学生自习室预约系统{% endblock %}
 
 {% block content %}
-<div class="jumbotron bg-light p-5 rounded-3 mb-4">
+<div class="jumbotron bg-light p-5 rounded-3 mb-5 text-center">
     <h1 class="display-4">欢迎使用自习室预约系统</h1>
     <p class="lead">轻松预约自习座位，高效管理学习时间</p>
     <hr class="my-4">
     <p>选择您喜欢的自习室和座位，开始您的学习之旅</p>
     {% if not user.is_authenticated %}
-    <a class="btn btn-primary btn-lg" href="{% url 'register' %}" role="button">
+    <a class="btn btn-primary btn-lg me-2" href="{% url 'register' %}" role="button">
         <i class="bi bi-person-plus"></i> 立即注册
     </a>
     <a class="btn btn-outline-primary btn-lg" href="{% url 'login' %}" role="button">
         <i class="bi bi-box-arrow-in-right"></i> 登录
     </a>
-    {% else %}
-    <a class="btn btn-primary btn-lg" href="{% url 'room_list' %}" role="button">
-        <i class="bi bi-search"></i> 浏览自习室
-    </a>
     {% endif %}
 </div>
 
-<h2 class="mb-4">开放的自习室</h2>
-
-{% if rooms %}
-<div class="row">
-    {% for room in rooms %}
+<!-- 三大功能按钮 -->
+<h2 class="text-center mb-4">快速开始</h2>
+<div class="row mb-4">
     <div class="col-md-4 mb-4">
-        <div class="card h-100 shadow-sm">
-            {% if room.image %}
-                <img src="{{ room.image.url }}" class="card-img-top room-image" alt="{{ room.name }}">
-            {% else %}
-                <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px;">
-                    <i class="bi bi-building" style="font-size: 4rem;"></i>
-                </div>
-            {% endif %}
-            <div class="card-body">
-                <h5 class="card-title">{{ room.name }}</h5>
-                <p class="card-text text-muted">
-                    <i class="bi bi-geo-alt"></i> {{ room.location }}
-                </p>
-                <p class="card-text">{{ room.description|truncatewords:20 }}</p>
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <span class="badge bg-success">{{ room.available_seats }}/{{ room.total_seats }} 可用</span>
-                    </div>
-                    <div class="text-muted small">
-                        <i class="bi bi-clock"></i> {{ room.open_time|time:"H:i" }} - {{ room.close_time|time:"H:i" }}
-                    </div>
-                </div>
-            </div>
-            <div class="card-footer bg-transparent">
-                <a href="{% url 'room_detail' room.id %}" class="btn btn-primary btn-sm w-100">
-                    <i class="bi bi-eye"></i> 查看详情
-                </a>
+        <div class="card text-center h-100 shadow-sm feature-card {% if is_filtered %}feature-card-active{% endif %}" id="btn-online-booking" role="button" data-bs-toggle="collapse" data-bs-target="#booking-section" aria-expanded="{% if is_filtered %}true{% else %}false{% endif %}" aria-controls="booking-section">
+            <div class="card-body d-flex flex-column align-items-center justify-content-center py-5">
+                <i class="bi bi-calendar-check text-primary" style="font-size: 4rem;"></i>
+                <h4 class="card-title mt-4">在线预约</h4>
+                <p class="card-text text-muted">选择日期和时段，查看可预约的自习室</p>
+                <span class="btn btn-primary btn-lg mt-2">
+                    <i class="bi bi-search"></i> 点击查看
+                </span>
             </div>
         </div>
     </div>
-    {% endfor %}
+    <div class="col-md-4 mb-4">
+        <div class="card text-center h-100 shadow-sm feature-card" id="btn-realtime-update" role="button" data-bs-toggle="collapse" data-bs-target="#realtime-section" aria-expanded="false" aria-controls="realtime-section">
+            <div class="card-body d-flex flex-column align-items-center justify-content-center py-5">
+                <i class="bi bi-clock-history text-success" style="font-size: 4rem;"></i>
+                <h4 class="card-title mt-4">实时更新</h4>
+                <p class="card-text text-muted">实时查看座位占用状态，掌握最新可用信息</p>
+                <span class="btn btn-outline-success btn-lg mt-2">
+                    <i class="bi bi-arrow-repeat"></i> 自动同步
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        {% if user.is_authenticated %}
+        <a href="{% url 'my_bookings' %}" class="card text-center h-100 shadow-sm feature-card text-decoration-none">
+        {% else %}
+        <a href="{% url 'login' %}" class="card text-center h-100 shadow-sm feature-card text-decoration-none">
+        {% endif %}
+            <div class="card-body d-flex flex-column align-items-center justify-content-center py-5">
+                <i class="bi bi-journal-text text-info" style="font-size: 4rem;"></i>
+                <h4 class="card-title mt-4">我的预约</h4>
+                <p class="card-text text-muted">查看和管理您的预约记录，取消不需要的预约</p>
+                <span class="btn btn-info btn-lg mt-2 text-white">
+                    <i class="bi bi-list-check"></i> 查看预约
+                </span>
+            </div>
+        </a>
+    </div>
 </div>
-{% else %}
-<div class="alert alert-info">
-    <i class="bi bi-info-circle"></i> 暂无开放的自习室
-</div>
-{% endif %}
 
-<div class="row mt-5">
-    <div class="col-md-4">
-        <div class="card text-center">
-            <div class="card-body">
-                <i class="bi bi-calendar-check text-primary" style="font-size: 3rem;"></i>
-                <h5 class="card-title mt-3">在线预约</h5>
-                <p class="card-text">随时随地在线预约自习室座位</p>
-            </div>
+<!-- 预约筛选区域（默认隐藏，点击"在线预约"展开） -->
+<div class="collapse {% if is_filtered %}show{% endif %}" id="booking-section">
+    <hr class="my-4">
+
+    <!-- 日期和时段选择表单 -->
+    <div class="card shadow-sm mb-4 filter-form-card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-funnel"></i> 选择日期和时段</h5>
+        </div>
+        <div class="card-body">
+            <form method="GET" action="{% url 'home' %}" id="filter-form" class="row g-3 align-items-end">
+                <div class="col-md-5">
+                    <label for="filter-date" class="form-label fw-bold">
+                        <i class="bi bi-calendar3"></i> 预约日期
+                    </label>
+                    <input type="date" class="form-control form-control-lg" id="filter-date" name="date"
+                           value="{{ filter_date }}" required>
+                </div>
+                <div class="col-md-5">
+                    <label for="filter-time" class="form-label fw-bold">
+                        <i class="bi bi-clock"></i> 预约时段
+                    </label>
+                    <select class="form-select form-select-lg" id="filter-time" name="time_slot" required>
+                        <option value="">请选择时段</option>
+                        <option value="morning" {% if filter_time_slot == 'morning' %}selected{% endif %}>上午 (08:00-12:00)</option>
+                        <option value="afternoon" {% if filter_time_slot == 'afternoon' %}selected{% endif %}>下午 (13:00-17:00)</option>
+                        <option value="evening" {% if filter_time_slot == 'evening' %}selected{% endif %}>晚上 (18:00-22:00)</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary btn-lg w-100">
+                        <i class="bi bi-search"></i> 查询
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="card text-center">
-            <div class="card-body">
-                <i class="bi bi-clock-history text-success" style="font-size: 3rem;"></i>
-                <h5 class="card-title mt-3">实时更新</h5>
-                <p class="card-text">实时查看座位占用状态</p>
+
+    {% if is_filtered %}
+    <!-- 筛选结果 -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">
+            <i class="bi bi-building"></i> 可预约的自习室
+            <span class="badge bg-success ms-2">{{ rooms|length }} 间</span>
+        </h2>
+        <small class="text-muted">
+            {{ filter_date }} · {{ filter_time_slot|yesno:"上午,下午,晚上" }}
+            {% if filter_time_slot == 'morning' %} (08:00-12:00)
+            {% elif filter_time_slot == 'afternoon' %} (13:00-17:00)
+            {% elif filter_time_slot == 'evening' %} (18:00-22:00)
+            {% endif %}
+        </small>
+    </div>
+
+    {% if rooms %}
+    <div class="row">
+        {% for room in rooms %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                {% if room.image %}
+                    <img src="{{ room.image.url }}" class="card-img-top room-image" alt="{{ room.name }}">
+                {% else %}
+                    <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px;">
+                        <i class="bi bi-building" style="font-size: 4rem;"></i>
+                    </div>
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ room.name }}</h5>
+                    <p class="card-text text-muted">
+                        <i class="bi bi-geo-alt"></i> {{ room.location }}
+                    </p>
+                    <p class="card-text">{{ room.description|truncatewords:20 }}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="badge bg-success fs-6">{{ room.computed_available }} 个座位可用</span>
+                        </div>
+                        <div class="text-muted small">
+                            <i class="bi bi-clock"></i> {{ room.open_time|time:"H:i" }} - {{ room.close_time|time:"H:i" }}
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent d-flex gap-2">
+                    <a href="{% url 'room_detail' room.id %}" class="btn btn-outline-primary btn-sm flex-grow-1">
+                        <i class="bi bi-eye"></i> 查看详情
+                    </a>
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'create_booking' room.id %}?date={{ filter_date }}&time_slot={{ filter_time_slot }}" class="btn btn-primary btn-sm flex-grow-1">
+                        <i class="bi bi-calendar-plus"></i> 去预约
+                    </a>
+                    {% endif %}
+                </div>
             </div>
         </div>
+        {% endfor %}
     </div>
-    <div class="col-md-4">
-        <div class="card text-center">
-            <div class="card-body">
-                <i class="bi bi-phone text-info" style="font-size: 3rem;"></i>
-                <h5 class="card-title mt-3">签到管理</h5>
-                <p class="card-text">到达后一键签到，方便快捷</p>
-            </div>
-        </div>
+    {% else %}
+    <div class="alert alert-warning text-center py-4">
+        <i class="bi bi-emoji-frown" style="font-size: 2rem;"></i>
+        <h5 class="mt-2">该时段暂无可用自习室</h5>
+        <p class="mb-0">请尝试选择其他日期或时段</p>
     </div>
+    {% endif %}
+    {% else %}
+    <!-- 未筛选时的提示 -->
+    <div class="text-center text-muted py-5">
+        <i class="bi bi-hand-index" style="font-size: 3rem;"></i>
+        <p class="mt-3 fs-5">请先选择日期和时段，然后点击"查询"查看可用自习室</p>
+    </div>
+    {% endif %}
 </div>
+
+<!-- 实时座位状态区域（默认隐藏，点击"实时更新"展开） -->
+<div class="collapse" id="realtime-section">
+    <hr class="my-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">
+            <i class="bi bi-arrow-repeat text-success"></i> 实时座位状态
+        </h2>
+        <div>
+            <span class="badge bg-info fs-6 me-2">{{ display_slot_label }}</span>
+            <button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#realtime-section">
+                <i class="bi bi-x-lg"></i> 收起
+            </button>
+        </div>
+    </div>
+
+    {% if rooms %}
+    <div class="row">
+        {% for room in rooms %}
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="mb-0">{{ room.name }}</h5>
+                        <small class="text-muted"><i class="bi bi-geo-alt"></i> {{ room.location }}</small>
+                    </div>
+                    <div class="text-end">
+                        <span class="badge bg-success fs-6">{{ room.computed_available }}/{{ room.total_seats }} 可用</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- 紧凑座位网格 -->
+                    <div class="realtime-seat-grid">
+                        {% for seat in room.realtime_seats %}
+                            {% if seat.status == 'unavailable' %}
+                                <div class="realtime-seat unavailable" title="{{ seat.seat_number }} - 不可用">
+                                    {{ seat.seat_number }}
+                                </div>
+                            {% elif seat.id in room.realtime_occupied_ids %}
+                                <div class="realtime-seat occupied" title="{{ seat.seat_number }} - 已预约">
+                                    {{ seat.seat_number }}
+                                </div>
+                            {% else %}
+                                <div class="realtime-seat available" title="{{ seat.seat_number }} - 可预约">
+                                    {{ seat.seat_number }}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <a href="{% url 'room_detail' room.id %}" class="btn btn-outline-primary btn-sm w-100">
+                        <i class="bi bi-eye"></i> 查看详情
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        <i class="bi bi-info-circle"></i> 暂无开放的自习室
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var bookingSection = document.getElementById('booking-section');
+    var btnBooking = document.getElementById('btn-online-booking');
+    var realtimeSection = document.getElementById('realtime-section');
+    var btnRealtime = document.getElementById('btn-realtime-update');
+
+    // 设置日期输入框的最小值为今天，并默认填入今天
+    var dateInput = document.getElementById('filter-date');
+    if (dateInput) {
+        var today = new Date().toISOString().split('T')[0];
+        dateInput.min = today;
+        if (!dateInput.value) {
+            dateInput.value = today;
+        }
+    }
+
+    // "在线预约"卡片 → 展开/收起 booking-section
+    if (bookingSection && btnBooking) {
+        bookingSection.addEventListener('show.bs.collapse', function() {
+            btnBooking.classList.add('feature-card-active');
+            realtimeSection.classList.remove('show');
+            btnRealtime.classList.remove('feature-card-active');
+            setTimeout(function() {
+                bookingSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 200);
+            if (dateInput) {
+                setTimeout(function() { dateInput.focus(); }, 500);
+            }
+        });
+        bookingSection.addEventListener('hide.bs.collapse', function() {
+            btnBooking.classList.remove('feature-card-active');
+        });
+    }
+
+    // "实时更新"卡片 → 展开/收起 realtime-section
+    if (realtimeSection && btnRealtime) {
+        realtimeSection.addEventListener('show.bs.collapse', function() {
+            btnRealtime.classList.add('feature-card-active');
+            bookingSection.classList.remove('show');
+            btnBooking.classList.remove('feature-card-active');
+            setTimeout(function() {
+                realtimeSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 200);
+        });
+        realtimeSection.addEventListener('hide.bs.collapse', function() {
+            btnRealtime.classList.remove('feature-card-active');
+        });
+    }
+});
+</script>
 {% endblock %}

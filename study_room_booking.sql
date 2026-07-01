@@ -204,11 +204,6 @@ INSERT INTO `auth_permission` VALUES (37, 'Can add 预约', 10, 'add_booking');
 INSERT INTO `auth_permission` VALUES (38, 'Can change 预约', 10, 'change_booking');
 INSERT INTO `auth_permission` VALUES (39, 'Can delete 预约', 10, 'delete_booking');
 INSERT INTO `auth_permission` VALUES (40, 'Can view 预约', 10, 'view_booking');
-INSERT INTO `auth_permission` VALUES (41, 'Can add 签到记录', 11, 'add_checkin');
-INSERT INTO `auth_permission` VALUES (42, 'Can change 签到记录', 11, 'change_checkin');
-INSERT INTO `auth_permission` VALUES (43, 'Can delete 签到记录', 11, 'delete_checkin');
-INSERT INTO `auth_permission` VALUES (44, 'Can view 签到记录', 11, 'view_checkin');
-
 -- ----------------------------
 -- Table structure for bookings_booking
 -- ----------------------------
@@ -234,26 +229,6 @@ CREATE TABLE `bookings_booking`  (
 -- Records of bookings_booking
 -- ----------------------------
 INSERT INTO `bookings_booking` VALUES (1, '2025-12-19', 'afternoon', 'approved', '000', '2025-12-17 02:19:27.753967', '2025-12-17 02:19:27.753967', 2, 2);
-
--- ----------------------------
--- Table structure for bookings_checkin
--- ----------------------------
-DROP TABLE IF EXISTS `bookings_checkin`;
-CREATE TABLE `bookings_checkin`  (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `checkin_time` datetime(6) NOT NULL,
-  `checkout_time` datetime(6) NULL DEFAULT NULL,
-  `duration` int(11) NOT NULL,
-  `note` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `booking_id` bigint(20) NOT NULL,
-  PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE INDEX `booking_id`(`booking_id`) USING BTREE,
-  CONSTRAINT `bookings_checkin_booking_id_354b221e_fk_bookings_booking_id` FOREIGN KEY (`booking_id`) REFERENCES `bookings_booking` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Records of bookings_checkin
--- ----------------------------
 
 -- ----------------------------
 -- Table structure for django_admin_log
@@ -301,7 +276,6 @@ INSERT INTO `django_content_type` VALUES (1, 'admin', 'logentry');
 INSERT INTO `django_content_type` VALUES (3, 'auth', 'group');
 INSERT INTO `django_content_type` VALUES (2, 'auth', 'permission');
 INSERT INTO `django_content_type` VALUES (10, 'bookings', 'booking');
-INSERT INTO `django_content_type` VALUES (11, 'bookings', 'checkin');
 INSERT INTO `django_content_type` VALUES (4, 'contenttypes', 'contenttype');
 INSERT INTO `django_content_type` VALUES (9, 'rooms', 'seat');
 INSERT INTO `django_content_type` VALUES (8, 'rooms', 'studyroom');
@@ -436,9 +410,9 @@ CREATE TABLE `rooms_studyroom`  (
 INSERT INTO `rooms_studyroom` VALUES (1, '一号自习室', '教学楼A101', '宽敞明亮', NULL, 4, 4, '08:00:00.000000', '22:00:00.000000', 'open', '空调, 插座, WiFi', '2024-06-01 09:00:00.000000', '2024-06-01 09:00:00.000000');
 INSERT INTO `rooms_studyroom` VALUES (2, '二号自习室', '教学楼B201', '安静舒适', NULL, 4, 3, '08:00:00.000000', '22:00:00.000000', 'open', '空调, 插座', '2024-06-01 09:01:00.000000', '2024-06-01 09:01:00.000000');
 INSERT INTO `rooms_studyroom` VALUES (3, '三号自习室', '图书馆301', '靠窗环境', NULL, 4, 4, '08:00:00.000000', '22:00:00.000000', 'maintenance', 'WiFi, 插座', '2024-06-01 09:02:00.000000', '2024-06-01 09:02:00.000000');
-INSERT INTO `rooms_studyroom` VALUES (4, '四号自习室', '宿舍楼活动室', '小型自习室', NULL, 4, 2, '09:00:00.000000', '21:00:00.000000', 'open', '空调', '2024-06-01 09:03:00.000000', '2024-06-01 09:03:00.000000');
-INSERT INTO `rooms_studyroom` VALUES (5, '五号自习室', '教学楼C401', '考试周开放', '', 4, 0, '10:00:00.000000', '17:00:00.000000', 'open', '插座', '2024-06-01 09:04:00.000000', '2025-12-17 02:22:33.809069');
-INSERT INTO `rooms_studyroom` VALUES (6, '六号自习室', '科技楼5F', '环境优雅，适合小组讨论', NULL, 6, 5, '07:30:00.000000', '21:30:00.000000', 'open', '空调, 插座, 黑板, WiFi', '2024-06-02 08:00:00.000000', '2024-06-02 08:00:00.000000');
-INSERT INTO `rooms_studyroom` VALUES (7, '七号自习室', '教学楼D203', '夜间开放，灯光充足', NULL, 8, 7, '19:00:00.000000', '06:00:00.000000', 'open', '插座, WiFi, 空调, 台灯', '2024-06-02 08:15:00.000000', '2024-06-02 08:15:00.000000');
+INSERT INTO `rooms_studyroom` VALUES (4, '四号自习室', '宿舍楼活动室', '小型自习室', NULL, 4, 2, '08:00:00.000000', '22:00:00.000000', 'open', '空调', '2024-06-01 09:03:00.000000', '2024-06-01 09:03:00.000000');
+INSERT INTO `rooms_studyroom` VALUES (5, '五号自习室', '教学楼C401', '考试周开放', '', 4, 0, '08:00:00.000000', '22:00:00.000000', 'open', '插座', '2024-06-01 09:04:00.000000', '2025-12-17 02:22:33.809069');
+INSERT INTO `rooms_studyroom` VALUES (6, '六号自习室', '科技楼5F', '环境优雅，适合小组讨论', NULL, 6, 5, '08:00:00.000000', '22:00:00.000000', 'open', '空调, 插座, 黑板, WiFi', '2024-06-02 08:00:00.000000', '2024-06-02 08:00:00.000000');
+INSERT INTO `rooms_studyroom` VALUES (7, '七号自习室', '教学楼D203', '夜间开放，灯光充足', NULL, 8, 7, '08:00:00.000000', '22:00:00.000000', 'open', '插座, WiFi, 空调, 台灯', '2024-06-02 08:15:00.000000', '2024-06-02 08:15:00.000000');
 
 SET FOREIGN_KEY_CHECKS = 1;
