@@ -599,7 +599,7 @@ BEGIN
         room_name,
         location
     FROM v_user_booking_record
-    WHERE student_id = p_student_id
+    WHERE student_id = p_student_id COLLATE utf8mb4_general_ci
     ORDER BY booking_date DESC, time_slot;
 END$$
 DELIMITER ;
@@ -614,8 +614,9 @@ DELIMITER ;
 -- 说明：座位号命名规则为「行字母 + 列数字」，
 --       如第1行第2列 → A2；第3行第4列 → C4
 --       生成后自动更新对应自习室的 total_seats 字段
--- 示例：CALL p_batch_insert_seat(8, 3, 4);
---       给8号自习室生成 3排×4列 共12个座位
+-- 示例：CALL p_batch_insert_seat(6, 2, 3);
+--       给6号自习室（现有2个座位）追加生成 2排×3列 共6个座位
+-- 注意：room_id 必须是 rooms_studyroom 中已存在的自习室ID
 -- ============================================================
 DROP PROCEDURE IF EXISTS `p_batch_insert_seat`;
 DELIMITER $$
@@ -627,10 +628,20 @@ CREATE PROCEDURE `p_batch_insert_seat`(
 BEGIN
     DECLARE i INT DEFAULT 1;
     DECLARE j INT DEFAULT 1;
+    DECLARE start_row INT DEFAULT 1;
+    DECLARE end_row INT DEFAULT 1;
     DECLARE seat_label CHAR(10);
 
-    -- 外层循环：遍历每一行（对应字母 A, B, C...）
-    WHILE i <= p_row_num DO
+    -- 自动计算起始行号：已有座位的最大行号 + 1，避免与现有座位冲突
+    SELECT IFNULL(MAX(`row`), 0) + 1 INTO start_row
+    FROM rooms_seat
+    WHERE room_id = p_room_id;
+
+    SET end_row = start_row + p_row_num - 1;
+    SET i = start_row;
+
+    -- 外层循环：从前面的序号开始生成新行（对应字母 A, B, C...）
+    WHILE i <= end_row DO
         SET j = 1;
         -- 内层循环：遍历每一列（对应数字 1, 2, 3...）
         WHILE j <= p_col_num DO
@@ -646,9 +657,10 @@ BEGIN
         SET i = i + 1;
     END WHILE;
 
-    -- 更新自习室的总座位数
+    -- 更新自习室的总座位数和可用座位数
     UPDATE rooms_studyroom
-    SET total_seats = (SELECT COUNT(*) FROM rooms_seat WHERE room_id = p_room_id)
+    SET total_seats = (SELECT COUNT(*) FROM rooms_seat WHERE room_id = p_room_id),
+        available_seats = (SELECT COUNT(*) FROM rooms_seat WHERE room_id = p_room_id AND status = 'available')
     WHERE id = p_room_id;
 END$$
 DELIMITER ;
